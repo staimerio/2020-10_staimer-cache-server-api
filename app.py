@@ -9,7 +9,7 @@ import settings
 # Routes
 from routes.routes import router
 
-# Agregar las rutas a la aplicación
+# Add all routes to App
 app.use(router)
 
 
