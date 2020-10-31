@@ -6,6 +6,9 @@ from retic import App as app
 # Settings
 import settings
 
+# Apps
+from apps.urls import APP_BACKEND
+
 # Routes
 from routes.routes import router
 

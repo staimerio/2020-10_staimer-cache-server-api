@@ -5,6 +5,7 @@ from retic import env, App as app
 
 # Services
 from retic.services.responses import success_response_service, error_response_service
+from retic.services.general.json import parse, jsonify
 
 # Utils
 from services.general.general import get_content_from_file, save_content_in_file
@@ -22,6 +23,7 @@ def get_by_id_cache(file):
     try:
         """Prepara all parameters"""
         _filepath = "{0}/{1}".format(CACHE_FOLDER_PATH, file)
+        _filepath_headers = "{0}-headers".format(_filepath)
 
         """Check if the file exists"""
         _exists = isfile(_filepath)
@@ -32,17 +34,23 @@ def get_by_id_cache(file):
 
         """If it exists do the following"""
         """Open file"""
-        _bfile = get_content_from_file(_filepath)
+        _bfile = get_content_from_file(_filepath, 'rb')
+        _headers = get_content_from_file(_filepath_headers, 'r')
+        _headers_json = parse(_headers)
 
+        """Define response"""
+        _response = {
+            u'body': _bfile,
+            u'headers': _headers_json
+        }
         """Return the file"""
         return success_response_service(
-            data=_bfile
-        )
+            data=_response)
     except Exception as error:
         return error_response_service(msg=str(error))
 
 
-def save_file_cache(file, bfile):
+def save_file_cache(file, response):
     """Save a file in cache storage
 
     :param filepath: Path of the file to write information.
@@ -50,6 +58,7 @@ def save_file_cache(file, bfile):
     """
     """Prepara all parameters"""
     _filepath = "{0}/{1}".format(CACHE_FOLDER_PATH, file)
+    _filepath_headers = "{0}-headers".format(_filepath)
 
     """Check if the file exists"""
     _exists = isdir(CACHE_FOLDER_PATH)
@@ -57,7 +66,10 @@ def save_file_cache(file, bfile):
     """If it is'nt exists, return a error"""
     if _exists:
         """Save file"""
-        save_content_in_file(_filepath, bfile)
+        save_content_in_file(_filepath, response['body'], mode='wb')
+        save_content_in_file(_filepath_headers, jsonify(
+            response['headers']
+        ), mode='w')
 
 
 def clean_cache_files():

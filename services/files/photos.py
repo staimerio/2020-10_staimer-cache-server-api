@@ -1,3 +1,6 @@
+# Retic
+from retic import env, App as app
+
 # Services
 from retic.services.responses import success_response_service, error_response_service
 from retic.services.general.json import jsonify, parse
@@ -5,8 +8,12 @@ from retic.services.general.json import jsonify, parse
 # Requests
 import requests
 
+# Constants
+URL_SENDFILES_PHOTOS = app.apps['backend']['sendfiles']['base_url'] + \
+    app.apps['backend']['sendfiles']['photos']
 
-def get_from_source(source):
+
+def get_from_params(album, filename):
     """Get a file from a url
 
     :param source: URL that will be use to get the file
@@ -14,7 +21,11 @@ def get_from_source(source):
 
     try:
         """Prepare the payload"""
-        _url = source
+        _url = "{0}/{1}/{2}".format(
+            URL_SENDFILES_PHOTOS,
+            album,
+            filename
+        )
 
         """Fetch file from the URL"""
         _file_req = requests.get(
