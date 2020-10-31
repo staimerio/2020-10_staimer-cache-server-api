@@ -37,14 +37,14 @@ def isdir(path):
     return os.path.isdir(path)
 
 
-def get_content_from_file(fname):
+def get_content_from_file(fname, mode="rb"):
     """Get all content from a file
 
     :param fname: Name of the file to get information.
     """
 
     """Open the file"""
-    _file = open(fname, "rb")
+    _file = open(fname, mode)
     """Read the file"""
     _content = _file.read()
     """Close the file"""
@@ -53,13 +53,15 @@ def get_content_from_file(fname):
     return _content
 
 
-def save_content_in_file(filepath, content):
+def save_content_in_file(filepath, content, mode="wb"):
     """Write content in a file
 
     :param filepath: Path of the file to write information.
+    :param content: Content to sabe in the file
+    :param mode: Kind of mode to open the file
     """
     """Open the file"""
-    _file = open(filepath, "wb")
+    _file = open(filepath, mode)
     """Write the file"""
     _file.write(content)
     """Close the file"""

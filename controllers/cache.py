@@ -4,8 +4,8 @@ from retic import Request, Response, Next
 # Services
 from retic.services.validations import validate_obligate_fields
 from retic.services.responses import error_response_service, success_response_service
-import services.cache.cache as cache
-import services.files.files as files
+from services.cache import cache
+from services.files import files, photos
 
 
 def get_by_id(req: Request, res: Response):
@@ -29,8 +29,10 @@ def get_by_id(req: Request, res: Response):
 
     """If it's exists, response to client"""
     if _file_cache['valid']:
+        _headers = {**_file_cache['data']['headers']}
         """Response a file data to client"""
-        return res.set_status(200).send(_file_cache['data'])
+        res.set_headers(_headers)
+        return res.set_status(200).send(_file_cache['data']['body'])
 
     """If it's not exists, get from the source main server"""
     _file_req = files.get_from_source(
@@ -41,15 +43,54 @@ def get_by_id(req: Request, res: Response):
     if not _file_req['valid']:
         """If it isn't exists, response to client an error"""
         return res.not_found(_file_req)
-        
+
     """Save file in the cache storage"""
     cache.save_file_cache(
         req.param('file'),
         _file_req['data']
     )
 
+    _headers = _file_req['data']['headers']
+    res.set_headers(_headers)
+    _binary = _file_req['data']['body']
     """Response to client the file"""
-    res.set_status(200).send(_file_req['data'])
+    res.set_status(200).send(_binary)
+
+
+def get_photos_by_id(req: Request, res: Response):
+    """Find file in the cache storage"""
+    _cahe_filename = req.param("album") + req.param("filename")
+
+    _file_cache = cache.get_by_id_cache(_cahe_filename)
+
+    """If it's exists, response to client"""
+    if _file_cache['valid']:
+        _headers = {**_file_cache['data']['headers']}
+        """Response a file data to client"""
+        res.set_headers(_headers)
+        return res.set_status(200).send(_file_cache['data']['body'])
+
+    """If it's not exists, get from the source main server"""
+    _file_req = photos.get_from_params(
+        req.param("album"), req.param("filename")
+    )
+
+    """Check if the file exists"""
+    if not _file_req['valid']:
+        """If it isn't exists, response to client an error"""
+        return res.not_found(_file_req)
+
+    """Save file in the cache storage"""
+    cache.save_file_cache(
+        _cahe_filename,
+        _file_req['data']
+    )
+
+    _headers = _file_req['data']['headers']
+    res.set_headers(_headers)
+    _binary = _file_req['data']['body']
+    """Response to client the file"""
+    res.set_status(200).send(_binary)
 
 
 def clean_cache_files(req: Request, res: Response):

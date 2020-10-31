@@ -24,6 +24,10 @@ router.options("/*", _cors)
 router \
     .get("/downloads/files/:file", cache.get_by_id)
 
+"""Define all routes - /view/photos/"""
+router \
+    .get("/view/photos/:album/:filename", cache.get_photos_by_id)
+
 """Define all routes - /cache/files"""
 router \
     .delete("/cache/files", cache.clean_cache_files)
