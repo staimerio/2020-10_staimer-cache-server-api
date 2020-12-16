@@ -5,6 +5,7 @@ from retic import App as app
 BACKEND_SENDFILES = {
     u"base_url": app.config.get('APP_BACKEND_SENDFILES'),
     u"photos": "/photos",
+    u"photos_folder": "/photos/folder",
 }
 
 APP_BACKEND = {
