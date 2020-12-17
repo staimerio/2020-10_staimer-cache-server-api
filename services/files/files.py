@@ -27,7 +27,7 @@ def get_from_source(source):
             return _file_req.json()
 
         _response_headers = parse(
-            _file_req.headers['custom_headers']) or _file_req.headers
+            _file_req.headers['custom_headers']) if 'custom_headers' in _file_req.headers else _file_req.headers
         """Define the response object"""
         _response = {
             u'body': _file_req.content,
