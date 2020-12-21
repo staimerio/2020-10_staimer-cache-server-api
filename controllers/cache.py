@@ -50,7 +50,7 @@ def get_by_id(req: Request, res: Response):
         _file_req['data']
     )
 
-    _headers = _file_req['data']['headers']
+    _headers = {**_file_req['data']['headers']}
     res.set_headers(_headers)
     _binary = _file_req['data']['body']
     """Response to client the file"""
