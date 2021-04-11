@@ -130,6 +130,42 @@ def get_photos_folder_by_id(req: Request, res: Response):
     res.set_status(200).send(_binary)
 
 
+def get_media_by_id(req: Request, res: Response):
+    """Get a file from his Id"""
+
+    """Find file in the cache storage"""
+    _file_cache = cache.get_by_id_cache(req.param('file'))
+
+    """If it's exists, response to client"""
+    if _file_cache['valid']:
+        _headers = {**_file_cache['data']['headers']}
+        """Response a file data to client"""
+        res.set_headers(_headers)
+        return res.set_status(200).send(_file_cache['data']['body'])
+
+    """If it's not exists, get from the source main server"""
+    _file_req = files.get_from_code(
+        req.param('file')
+    )
+
+    """Check if the file exists"""
+    if not _file_req['valid']:
+        """If it isn't exists, response to client an error"""
+        return res.not_found(_file_req)
+
+    """Save file in the cache storage"""
+    cache.save_file_cache(
+        req.param('file'),
+        _file_req['data']
+    )
+
+    _headers = {**_file_req['data']['headers']}
+    res.set_headers(_headers)
+    _binary = _file_req['data']['body']
+    """Response to client the file"""
+    res.set_status(200).send(_binary)
+
+
 def get_files_folder_by_id(req: Request, res: Response):
     """Find file in the cache storage"""
     _cahe_filename = req.param(
@@ -183,3 +219,34 @@ def clean_cache_files(req: Request, res: Response):
                 msg="Cache deleted."
             )
         )
+
+
+def get_stream_by_code(req: Request, res: Response):
+    """Get a file from his Id"""
+
+    """Find file in the cache storage"""
+    _file_exists = cache.get_by_id_cache(
+        req.param('file'), has_headers=False, extension='.mp4')
+
+    """If it's exists, response to client"""
+    if _file_exists['valid']:
+        return res.redirect(_file_exists['data']['url'])
+
+    """If it's not exists, get from the source main server"""
+    _file_req = files.get_from_code(
+        req.param('file')
+    )
+
+    """Check if the file exists"""
+    if not _file_req['valid']:
+        """If it isn't exists, response to client an error"""
+        return res.not_found(_file_req)
+
+    """Save file in the cache storage"""
+    cache.save_file_cache(
+        req.param('file'),
+        _file_req['data'],
+        has_headers=False, extension='.mp4'
+    )
+
+    return res.redirect(_file_exists['data']['url'])

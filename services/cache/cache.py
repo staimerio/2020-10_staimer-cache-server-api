@@ -13,17 +13,19 @@ from services.general.general import isfile, rmtree, mkdir, isdir
 
 # Constants
 CACHE_FOLDER_PATH = app.config.get('CACHE_FOLDER_PATH')
+CACHE_BASE_PATH = app.config.get('CACHE_BASE_PATH')
 
 
-def get_by_id_cache(file):
+def get_by_id_cache(file, has_headers=True, extension=''):
     """Find a file on cache storage
 
     :param file: Id of the file, it's the name in the cache storage
     """
     try:
         """Prepara all parameters"""
-        _filepath = "{0}/{1}".format(CACHE_FOLDER_PATH, file)
-        _filepath_headers = "{0}-headers".format(_filepath)
+        _filepath = "{0}/{1}{2}".format(CACHE_FOLDER_PATH, file, extension)
+        if has_headers:
+            _filepath_headers = "{0}-headers".format(_filepath)
 
         """Check if the file exists"""
         _exists = isfile(_filepath)
@@ -35,13 +37,19 @@ def get_by_id_cache(file):
         """If it exists do the following"""
         """Open file"""
         _bfile = get_content_from_file(_filepath, 'rb')
-        _headers = get_content_from_file(_filepath_headers, 'r')
-        _headers_json = parse(_headers)
+        if has_headers:
+            _headers = get_content_from_file(_filepath_headers, 'r')
+            _headers_json = parse(_headers)
+
+        """If it exists do the following"""
+        _url = "{0}/{1}/{2}".format(CACHE_BASE_PATH, CACHE_FOLDER_PATH, file)
 
         """Define response"""
         _response = {
             u'body': _bfile,
-            u'headers': _headers_json
+            u'headers': _headers_json if has_headers else {},
+            u'exists': _exists,
+            u'url': _url,
         }
         """Return the file"""
         return success_response_service(
@@ -50,15 +58,16 @@ def get_by_id_cache(file):
         return error_response_service(msg=str(error))
 
 
-def save_file_cache(file, response):
+def save_file_cache(file, response, has_headers=True, extension='.mp4'):
     """Save a file in cache storage
 
     :param filepath: Path of the file to write information.
     :param bfile: File to save
     """
     """Prepara all parameters"""
-    _filepath = "{0}/{1}".format(CACHE_FOLDER_PATH, file)
-    _filepath_headers = "{0}-headers".format(_filepath)
+    _filepath = "{0}/{1}{2}".format(CACHE_FOLDER_PATH, file, extension)
+    if has_headers:
+        _filepath_headers = "{0}-headers".format(_filepath)
 
     """Check if the file exists"""
     _exists = isdir(CACHE_FOLDER_PATH)
@@ -67,9 +76,10 @@ def save_file_cache(file, response):
     if _exists:
         """Save file"""
         save_content_in_file(_filepath, response['body'], mode='wb')
-        save_content_in_file(_filepath_headers, jsonify(
-            response['headers']
-        ), mode='w')
+        if has_headers:
+            save_content_in_file(_filepath_headers, jsonify(
+                response['headers']
+            ), mode='w')
 
 
 def clean_cache_files():

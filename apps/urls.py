@@ -7,6 +7,7 @@ BACKEND_SENDFILES = {
     u"photos": "/photos",
     u"photos_folder": "/photos/folder",
     u"files_folder": "/files/folder",
+    u"downloads_files": "/downloads/files",
 }
 
 APP_BACKEND = {

@@ -38,3 +38,12 @@ router \
 """Define all routes - /cache/files"""
 router \
     .delete("/cache/files", cache.clean_cache_files)
+
+
+"""Define all routes - /embed/files"""
+router \
+    .get("/media/files/:file", cache.get_media_by_id)
+
+"""CDN"""
+router \
+    .get("/stream/:file", cache.get_stream_by_code)
