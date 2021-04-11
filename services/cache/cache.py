@@ -58,7 +58,7 @@ def get_by_id_cache(file, has_headers=True, extension=''):
         return error_response_service(msg=str(error))
 
 
-def save_file_cache(file, response, has_headers=True, extension='.mp4'):
+def save_file_cache(file, response, has_headers=True, extension=''):
     """Save a file in cache storage
 
     :param filepath: Path of the file to write information.

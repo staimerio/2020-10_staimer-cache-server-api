@@ -249,4 +249,4 @@ def get_stream_by_code(req: Request, res: Response):
         has_headers=False, extension='.mp4'
     )
 
-    return res.redirect(_file_exists['data']['url'])
+    return res.redirect(_file_req['data']['url'])
