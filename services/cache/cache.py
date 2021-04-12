@@ -42,7 +42,7 @@ def get_by_id_cache(file, has_headers=True, extension=''):
             _headers_json = parse(_headers)
 
         """If it exists do the following"""
-        _url = "{0}/{1}/{2}".format(CACHE_BASE_PATH, CACHE_FOLDER_PATH, file)
+        _url = "{0}/{1}{2}".format(CACHE_BASE_PATH, file, extension)
 
         """Define response"""
         _response = {
