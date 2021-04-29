@@ -250,3 +250,41 @@ def get_stream_by_code(req: Request, res: Response):
     )
 
     return res.redirect(_file_req['data']['url'])
+
+
+def download_stream_by_code(req: Request, res: Response):
+    """Get a file from his Id"""
+
+    """Find file in the cache storage"""
+    _file_exists = cache.get_by_id_cache(
+        req.param('file'), has_headers=False, extension='.mp4')
+
+    """If it's exists, response to client"""
+    if _file_exists['valid']:
+        _data_response = {
+            'url': _file_exists['data']['url']
+        }
+        return res.ok(_data_response)
+
+    """If it's not exists, get from the source main server"""
+    _file_req = files.get_from_code(
+        req.param('file'),
+        extension='.mp4'
+    )
+
+    """Check if the file exists"""
+    if not _file_req['valid']:
+        """If it isn't exists, response to client an error"""
+        return res.not_found(_file_req)
+
+    """Save file in the cache storage"""
+    cache.save_file_cache(
+        req.param('file'),
+        _file_req['data'],
+        has_headers=False, extension='.mp4'
+    )
+
+    _data_response = {
+        'url': _file_req['data']['url']
+    }
+    return res.ok(_data_response)

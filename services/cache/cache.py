@@ -46,7 +46,7 @@ def get_by_id_cache(file, has_headers=True, extension=''):
 
         """Define response"""
         _response = {
-            u'body': _bfile,
+            # u'body': _bfile,
             u'headers': _headers_json if has_headers else {},
             u'exists': _exists,
             u'url': _url,
