@@ -1,3 +1,7 @@
+
+# Logging
+import logging
+
 # Retic
 from retic import env, App as app
 
@@ -72,9 +76,15 @@ def get_from_folder_params(album, code, filename):
         _file_req = requests.get(
             _url
         )
+        # logging.warning('*****************************************')
+        # logging.warning('_url')
+        # logging.warning(_url)
 
         """Check if the response is valid"""
         if _file_req.status_code != 200:
+            # logging.warning('*****************************************')
+            # logging.warning('status_code')
+            # logging.warning(_file_req.json())
             """Return error if the response is invalid"""
             return _file_req.json()
 
