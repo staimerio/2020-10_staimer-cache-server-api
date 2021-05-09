@@ -1,3 +1,6 @@
+
+# Logging
+import logging
 # Retic
 from retic import Request, Response, Next
 
@@ -97,8 +100,14 @@ def get_photos_folder_by_id(req: Request, res: Response):
     """Find file in the cache storage"""
     _cahe_filename = req.param(
         "album") + req.param("code") + req.param("filename")
+    logging.warning('*****************************************')
+    logging.warning('_cahe_filename')
+    logging.warning(_cahe_filename)
 
     _file_cache = cache.get_by_id_cache(_cahe_filename)
+    # logging.warning('*****************************************')
+    # logging.warning('_file_cache')
+    # logging.warning(_file_cache)
 
     """If it's exists, response to client"""
     if _file_cache['valid']:
@@ -113,6 +122,9 @@ def get_photos_folder_by_id(req: Request, res: Response):
     )
 
     """Check if the file exists"""
+    logging.warning('*****************************************')
+    logging.warning('_file_req')
+    logging.warning(_file_req)
     if not _file_req['valid']:
         """If it isn't exists, response to client an error"""
         return res.not_found(_file_req)
