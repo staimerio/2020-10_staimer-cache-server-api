@@ -119,8 +119,8 @@ def get_photos_folder_by_id(req: Request, res: Response):
     """If it's not exists, get from the source main server"""
     _file_req = photos.get_from_folder_params(
         req.param("album"), req.param("code"), req.param("filename")
-    )    
-    
+    )
+
     """Check if the file exists"""
     # #logging.warning('*****************************************')
     # #logging.warning('_file_req')

@@ -34,9 +34,9 @@ def get_by_id_cache(file, has_headers=True, extension=''):
         _exists = isfile(_filepath)
 
         """If it is'nt exists, return a error"""
-        #logging.warning('*****************************************')
-        #logging.warning('_exists')
-        #logging.warning(_exists)
+        # logging.warning('*****************************************')
+        # logging.warning('_exists')
+        # logging.warning(_exists)
         if not _exists:
             return error_response_service(msg='Not found.')
 
@@ -74,24 +74,26 @@ def save_file_cache(file, response, has_headers=True, extension=''):
     _filepath = "{0}/{1}{2}".format(CACHE_FOLDER_PATH, file, extension)
     if has_headers:
         _filepath_headers = "{0}-headers".format(_filepath)
-    #logging.warning('*****************************************')
-    #logging.warning('_filepath')
-    #logging.warning(_filepath)
+    # logging.warning('*****************************************')
+    # logging.warning('_filepath')
+    # logging.warning(_filepath)
 
     """Check if the file exists"""
     _exists = isdir(CACHE_FOLDER_PATH)
 
     """If it is'nt exists, return a error"""
-    #logging.warning('*****************************************')
-    #logging.warning('_exists')
-    #logging.warning(_exists)
+    # logging.warning('*****************************************')
+    # logging.warning('_exists')
+    # logging.warning(_exists)
     if _exists:
         """Save file"""
         save_content_in_file(_filepath, response['body'], mode='wb')
         if has_headers:
-            save_content_in_file(_filepath_headers, jsonify(
-                response['headers']
-            ), mode='w')
+            if not isinstance(object, dict):
+                _headers=dict(response['headers'])
+            else:
+                _headers=response['headers']
+            save_content_in_file(_filepath_headers, jsonify(_headers), mode='w')
 
 
 def clean_cache_files():
