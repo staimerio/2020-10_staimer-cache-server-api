@@ -8,6 +8,8 @@ from retic.services.general.json import jsonify, parse
 # Requests
 import requests
 
+import base64
+
 # contants
 URL_SENDFILES_FILES_FOLDER = app.apps['backend']['sendfiles']['base_url'] + \
     app.apps['backend']['sendfiles']['files_folder']
@@ -128,3 +130,12 @@ def get_from_code(code, extension):
         return success_response_service(data=_response)
     except Exception as error:
         return error_response_service(msg=str(error))
+
+
+
+def get_from_source_encoded(source):
+    """Get a file from a url
+
+    :param source: URL that will be use to get the file
+    """    
+    return get_from_source(base64.b64decode(source))

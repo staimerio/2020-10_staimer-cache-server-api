@@ -300,3 +300,52 @@ def download_stream_by_code(req: Request, res: Response):
         'url': _file_req['data']['url']
     }
     return res.ok(_data_response)
+
+
+def get_by_id_param(req: Request, res: Response):
+    """Get a file from his Id"""
+
+    """Find file in the cache storage"""
+    _file_cache = cache.get_by_id_cache(req.param('file'))
+
+    """If it's exists, response to client"""
+    if _file_cache['valid']:
+        _headers = {**_file_cache['data']['headers']}
+        """Response a file data to client"""
+        res.set_headers(_headers)
+        return res.set_status(200).send(_file_cache['data']['body'])
+
+    """Check that all params are valid"""
+    _validate = validate_obligate_fields({
+        u'id': req.param('id'),
+    })
+
+    """Si existen problemas, retornar un mensaje de error"""
+    if _validate["valid"] is False:
+        return res.bad_request(
+            error_response_service(
+                "The header {} is necesary.".format(_validate["error"])
+            )
+        )
+
+    """If it's not exists, get from the source main server"""
+    _file_req = files.get_from_source_encoded(
+        req.param('id')
+    )
+
+    """Check if the file exists"""
+    if not _file_req['valid']:
+        """If it isn't exists, response to client an error"""
+        return res.not_found(_file_req)
+
+    """Save file in the cache storage"""
+    cache.save_file_cache(
+        req.param('file'),
+        _file_req['data']
+    )
+
+    _headers = {**_file_req['data']['headers']}
+    res.set_headers(_headers)
+    _binary = _file_req['data']['body']
+    """Response to client the file"""
+    res.set_status(200).send(_binary)

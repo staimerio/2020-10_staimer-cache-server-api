@@ -51,4 +51,4 @@ router \
     .get("/stream/:file/download", cache.download_stream_by_code)
 
 router \
-    .get("/images/:file", cache.get_by_id)
+    .get("/images/:file", cache.get_by_id_param)
